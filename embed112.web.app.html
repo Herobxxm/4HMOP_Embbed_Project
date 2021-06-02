@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body {
+  			background-color: #aeffc2;
+		}
+        .div1 {
+            position: relative;
+            background-color: lightgrey;
+            width: 600px;
+            border: 5px solid rgb(1, 58, 25);
+            padding: 100px;
+            margin: auto;
+        }
+        .red{
+            color: red;
+        }
+        .green{
+            color:green;
+        }
+        .orange{
+            color: orange;
+        }
+        .div2{
+            position: relative;
+            top: 50px;
+            line-height: 100px;
+        }
+
+        h1 {
+            color: black;
+            font-family: 'Times New Roman', serif;
+            font-size: 40px;
+            text-align:  center;
+            line-height: 3.0;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 5px rgb(0, 68, 0);
+        }
+        h2{
+            position: absolute;
+            font-size: 40px;
+            top: 10px;
+            left: 250px;
+            color: #000;
+            text-decoration: underline;
+            letter-spacing: 3px;
+            color: rgb(87, 1, 1);
+            text-shadow: 2px 2px 5px rgb(168, 26, 7);
+        }
+        /* .var1{
+            position: absolute;
+            font-size: 25px;
+            right: 20px;
+            top : 10px;
+        } */
+        .var2g{
+            color : green;
+            font-size: 40px;
+            text-align: center;
+        }
+        .var2o{
+            color : orange;
+            font-size: 40px;
+            text-align: center;
+        }
+        .var2r{
+            color : red;
+            font-size: 40px;
+            text-align: center;
+        }
+        .var3g{
+            position: absolute;
+            font-size: 30px;
+            bottom: 15px;
+            left: 200px;
+            text-align: center;
+            color: green;
+        }
+        .var3r{
+            position: absolute;
+            font-size: 30px;
+            bottom: 15px;
+            left: 200px;
+            text-align: center;
+            color: red;
+        }
+        .var4{
+            position: absolute;
+            left: 200px;
+            height: 60px;
+            font-size: 30px;
+        }
+        .var5{
+            position: absolute;
+            right: 200px;
+            height: 60px;
+            font-size: 30px;
+        }
+
+        table{
+            position: relative;
+            width:75%;
+            top: 130px;
+            margin: auto;
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            background-color: white;
+            border: 1px solid black;
+        }
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+      .ss{
+        height: 200px;
+      }
+      .sss{
+        height: 25px;
+      }
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+	</style>
+</head>
+<body>
+<script src="https://cdn.netpie.io/microgear.js"></script>
+<script>
+  const APPID = "embed112";
+  const KEY = "9Q8sJhgnAiG0FZN";
+  const SECRET = "qHOtNTJPAutjMR3C1Iud2bwrA";
+
+  const ALIAS = "HTML_web";         //  ชื่อตัวเอง
+  const thing1 = "mcu8266";          //  ชื่อเพื่อนที่จะคุย
+
+  var microgear = Microgear.create({
+    key: KEY,
+    secret: SECRET,
+    alias : ALIAS
+  });
+
+  var intervalID = window.setInterval(myCallback, 2000);
+
+  function myCallback() {
+    var request = new XMLHttpRequest();
+    request.open('GET', 'https://api.netpie.io/feed/embed112Feed?apikey=vieXGnCnRE2cRdelUBoRgIX5Qy2TdVgt&granularity=10seconds&since=1day&filter=currentQ,contact', true);
+    request.onload = function () {
+  // Begin accessing JSON data here
+        var myjson = JSON.parse(this.responseText);
+        console.log(myjson);
+        console.log(request.status);
+        if(request.status >= 20 && request.status <400){
+            console.log(myjson);
+            var a = myjson.data[1].values[myjson.data[1].values.length-1][1];
+            document.getElementById("currentQ").innerHTML = "Current Queue = " + a + " / 7 ";
+          a = parseInt(a);
+          console.log(a >= 5);
+      if(a >= 5){
+        document.getElementById("currentQ").classList ="var2r";
+      }
+      else if(a >= 3){
+        document.getElementById("currentQ").classList ="var2o";
+      }
+        else{
+        document.getElementById("currentQ").classList = "var2g";
+      }
+      var b = myjson.data[0].values[myjson.data[0].values.length-1][1]
+      if(b == "1"){
+          status = " Hazard";
+          document.getElementById("distance").innerHTML = "Distance Status = " + status;
+          document.getElementById("distance").classList = "var3r";
+      }
+      else{
+          status = "OK Distance";
+          document.getElementById("distance").innerHTML = "Distance Status = " + status;
+          document.getElementById("distance").classList = "var3g";
+      }
+        }
+    }
+    request.send(null);
+  }
+  microgear.on('message',function(topic,msg) {
+    var date = Date();
+    var status;
+    var split_msg = msg.split("/"); 
+    console.log(msg);  // for debug
+    if(typeof(split_msg[0])!='undefined' && split_msg[0]==""){
+
+      document.getElementById("currentQ").innerHTML = "Current Queue = " + split_msg[1] + " / 7 ";
+      var a = parseInt(split_msg[1]);
+      if(a >= 5){
+        document.getElementById("currentQ").classList ="var2r";
+      }
+      else if(a >= 3){
+        document.getElementById("currentQ").classList ="var2o";
+      }
+        else{
+        document.getElementById("currentQ").classList = "var2g";
+      }
+      if(split_msg[2] == "1"){
+          status = " Hazard";
+          document.getElementById("distance").innerHTML = "Distance Status = " + status;
+          document.getElementById("distance").classList = "var3r";
+      }
+      else{
+          status = "OK Distance";
+          document.getElementById("distance").innerHTML = "Distance Status = " + status;
+          document.getElementById("distance").classList = "var3g";
+      }
+    }
+  });
+
+  microgear.on('connected', function() {
+    microgear.setAlias(ALIAS);
+    document.getElementById("connected_NETPIE").innerHTML = "QUEUE CHECKER"
+  });
+
+  microgear.on('present', function(event) {
+    console.log(event);
+  });
+
+  microgear.on('absent', function(event) {
+    console.log(event);
+  });
+
+  microgear.resettoken(function(err) {
+    microgear.connect(APPID);
+  });
+
+  function genContactTable(myjson){
+    var header = '';
+    var valueRows = '';
+    header += '<tr><th><center>Contact Time</th></tr>';
+    for(i=0;i<myjson.data[0].values.length;i++){
+            if(myjson.data[0].values[i][1] == '1'){
+            var date = myjson.data[0].values[i][0];
+            var s1  = new Date(date).toLocaleDateString("th-TH");
+            var s2 = new Date(date).toLocaleTimeString("th-TH");
+            var rdate = s1 + '  ' + s2;
+            var value = '<tr><td><center>' + rdate + '</center></td></tr>';
+            valueRows += value;
+        }
+    }
+    table = header + valueRows;
+    return table;
+    }
+
+  function genQTable(myjson){
+    var header = '';
+    var valueRow = '';
+    var valueRows = '';
+    var value = '';
+    var table = '';
+    var j = 0;
+    header += '<colgroup><col style="width: 33%"/><col style="width: 67%"/></colgroup><tr><th><center>Queue Number</th><th><center>Time</th></tr>';
+    if(myjson.data[1].values.length>0){
+      console.log("ok");
+    var oldQ = parseInt(myjson.data[1].values[0][1])-1;
+    for(i=0;i<myjson.data[1].values.length;i++){
+      console.log("ok1");
+        value = '';
+        valueRow = '';
+        if(parseInt(myjson.data[1].values[i][1]) > oldQ){
+            console.log("ok2");
+            var date = myjson.data[1].values[i][0];
+            var s1  = new Date(date).toLocaleDateString("th-TH");
+            var s2 = new Date(date).toLocaleTimeString("th-TH");
+            var rDate = s1 + '  ' + s2;
+            j += 1;
+            value += '<td><center>' + String(j) + '</td></center>';
+            value += '<td><center>' + (rDate) + '</td></center>';
+            valueRow = '<tr>' + value +'</tr>';
+            valueRows += valueRow;
+         }
+         oldQ = parseInt(myjson.data[1].values[i][1]);
+        }
+    }
+    table = header + valueRows;
+    return table;
+    }
+
+function c() {
+    alert(112);
+}
+  function d(mode) {
+    var request = new XMLHttpRequest();
+    request.open('GET', 'https://api.netpie.io/feed/embed112Feed?apikey=vieXGnCnRE2cRdelUBoRgIX5Qy2TdVgt&granularity=10seconds&since=1day&filter=currentQ,contact', true);
+    request.onload = function () {
+  // Begin accessing JSON data here
+        var myjson = JSON.parse(this.responseText);
+        console.log(myjson);
+        console.log(request.status);
+        if(request.status >= 20 && request.status <400){
+            console.log(myjson);
+            if(mode == 1){
+                document.getElementById("tab").innerHTML = genContactTable(myjson);
+            }else{
+                document.getElementById("tab").innerHTML = genQTable(myjson);
+            }
+        }
+    }
+    request.send(null);
+}
+
+</script>
+
+<h1 id="connected_NETPIE" ></h1>
+<div class = "div1"> <h2 id="gg">ร้านข้าวแกงลุงพล</h2> 
+                    <p class="var2g" id="currentQ">current queue</p> 
+                    <p class="var3g" id="distance">distance status</p></div> 
+
+<div class="div2">
+<button  type="button" class="var4" onclick="d(2)">Queue History</button>
+<button  type="button" class="var5" onclick="d(1)">Contact History</button>
+<div class="sss"></div>
+</div>
+<table id="tab"></table>
+<div class="ss"></div>
+</body>
+</html>
